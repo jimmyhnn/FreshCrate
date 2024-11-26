@@ -15,10 +15,10 @@ public class DatabaseConfig {
         dataSource.setDriverClassName("org.postgresql.Driver");
         dataSource.setUrl("jdbc:postgresql://localhost:5432/freshcratedb");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("password");
+        dataSource.setPassword("0411");
         return dataSource;
     }
-
+ 
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
