@@ -21,15 +21,16 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     @Override
     public void createCustomer(CustomerDTO customer) {
         String sql = "INSERT INTO Customer (id, firstName, lastName, email, phonenumber) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getEmail(), customer.getPhoneNumber());
+        jdbcTemplate.update(sql, customer.getId(), customer.getFirstName(), customer.getLastName(), customer.getEmail(),
+                customer.getPhoneNumber());
     }
 
     @Override
     public List<CustomerDTO> getCustomer(Integer id,
-                                         String firstName,
-                                         String lastName,
-                                         String email,
-                                         String phoneNumber) {
+            String firstName,
+            String lastName,
+            String email,
+            String phoneNumber) {
         List<Object> params = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM Customer WHERE 1=1 ");
 
@@ -54,14 +55,19 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             params.add("%" + phoneNumber + "%");
         }
 
-        return jdbcTemplate.query(sql.toString(), params.toArray(), (rs, rowNum) -> new CustomerDTO(
-                rs.getInt("id"),
-                rs.getString("firstName"),
-                rs.getString("lastName"),
-                rs.getString("email"),
-                rs.getString("phonenumber")
-        ));
-
+        return jdbcTemplate.query(
+                sql.toString(),
+                ps -> {
+                    for (int i = 0; i < params.size(); i++) {
+                        ps.setObject(i + 1, params.get(i)); // Set each parameter in order
+                    }
+                },
+                (rs, rowNum) -> new CustomerDTO(
+                        rs.getInt("id"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber")));
     }
 
     @Override
@@ -72,8 +78,7 @@ public class CustomerRepositoryImpl implements CustomerRepository {
                 rs.getString("firstName"),
                 rs.getString("lastName"),
                 rs.getString("email"),
-                rs.getString("phonenumber")
-        ));
+                rs.getString("phonenumber")));
     }
 
     @Override

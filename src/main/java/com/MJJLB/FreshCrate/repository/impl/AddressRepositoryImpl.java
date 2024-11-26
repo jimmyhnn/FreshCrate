@@ -16,15 +16,15 @@ public class AddressRepositoryImpl implements AddressRepository {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public AddressRepositoryImpl(JdbcTemplate jdbcTemplate){
+    public AddressRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     @Override
     public void createAddress(CustomerAddressDTO address) {
         String sql = "INSERT INTO Address (id, customerId, street, city, zipCode, stateID) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, address.getId(), address.getCustomerId(), address.getStreet(), address.getCity(), address.getZipCode(), address.getStateID());
+        jdbcTemplate.update(sql, address.getId(), address.getCustomerId(), address.getStreet(), address.getCity(),
+                address.getZipCode(), address.getStateID());
     }
 
     @Override
@@ -40,19 +40,22 @@ public class AddressRepositoryImpl implements AddressRepository {
             first = false;
         }
         if (StringUtils.hasText(city)) {
-            if (!first) sql.append(", ");
+            if (!first)
+                sql.append(", ");
             sql.append("city = ?");
             params.add(city);
             first = false;
         }
         if (StringUtils.hasText(zipCode)) {
-            if (!first) sql.append(", ");
+            if (!first)
+                sql.append(", ");
             sql.append("zipCode = ?");
             params.add(zipCode);
             first = false;
         }
         if (stateId != null) {
-            if (!first) sql.append(", ");
+            if (!first)
+                sql.append(", ");
             sql.append("stateID = ?");
             params.add(stateId);
         }
@@ -72,14 +75,17 @@ public class AddressRepositoryImpl implements AddressRepository {
     @Override
     public List<CustomerAddressDTO> getAddressByCustomerId(Integer customerId) {
         String sql = "SELECT id, customerId, street, city, zipCode, stateId FROM Address WHERE customerId = ?";
-        return jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) -> new CustomerAddressDTO(
-                rs.getInt("id"),
-                rs.getString("street"),
-                rs.getString("city"),
-                rs.getString("zipCode"),
-                rs.getString("stateID"),
-                rs.getInt("customerId")
-        ));
+        return jdbcTemplate.query(
+                sql,
+                ps -> ps.setObject(1, customerId), // Set the first parameter (customerId)
+                (rs, rowNum) -> new CustomerAddressDTO(
+                        rs.getInt("id"),
+                        rs.getString("street"),
+                        rs.getString("city"),
+                        rs.getString("zipCode"),
+                        rs.getString("stateID"),
+                        rs.getInt("customerId")));
+
     }
 
     @Override
@@ -91,8 +97,6 @@ public class AddressRepositoryImpl implements AddressRepository {
                 rs.getString("city"),
                 rs.getString("zipCode"),
                 rs.getString("stateID"),
-                rs.getInt("customerId")
-        ));
+                rs.getInt("customerId")));
     }
 }
-
